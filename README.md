@@ -3,6 +3,9 @@
 - Create vite
 - Configured Tailwind
 - Configured Git
+- Header
+- Login Form
+- sign-up Form
 
 # Features
 
