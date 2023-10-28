@@ -4,8 +4,19 @@
 - Configured Tailwind
 - Configured Git
 - Header
+- Routing
 - Login Form
 - sign-up Form
+- Form Validation
+- use ref
+- firebase setup
+- deploying to production
+- Create signup user account in firebase
+- implement sign in user Api
+- created redux store with user slice
+- update store with user info
+- implemented signout and 
+
 
 # Features
 

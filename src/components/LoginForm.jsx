@@ -1,13 +1,103 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { updateProfile } from "firebase/auth";
+
+import checkValidData from "../utils/validate";
+import {
+	createUserWithEmailAndPassword,
+	signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const [isloginform, setisloginfrom] = useState(true);
+	const [errormsg, setErrorMsg] = useState(null);
 
-	const handleForm = (e) => {
-		e.preventDefault();
+	const fname = useRef(null);
+	const email = useRef(null);
+	const password = useRef(null);
+
+
+	const handleButtonclick = () => {
+		//validate the form data
+		const msg = checkValidData(
+			email.current.value,
+			password.current.value,
+			!isloginform && fname.current.value
+		);
+
+		setErrorMsg(msg);
+		if (msg !== null) return;
+		//signin or signup
+
+		if (!isloginform) {
+			//sign up logic
+			createUserWithEmailAndPassword(
+				auth,
+				email.current.value,
+				password.current.value
+			)
+				.then((userCredential) => {
+					// Signed up
+					const user = userCredential.user;
+					// console.log(user);
+
+					updateProfile(user, {
+						displayName: fname.current.value,
+						photoURL: "https://example.com/jane-q-user/profile.jpg",
+					})
+						.then(() => {
+							// Profile updated!
+							// ...
+							const { uid, email, displayName, photoURL } = auth.currentUser;
+							// console.log(user);
+							dispatch(
+								addUser({
+									uid: uid,
+									email: email,
+									displayName: displayName,
+									photoURL: photoURL,
+								})
+							);
+							navigate("/Browse")
+						})
+						.catch((error) => {
+							// An error occurred
+							setErrorMsg(error.msg);
+						});
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					setErrorMsg(errorCode + " - " + errorMessage);
+				});
+		} else {
+			//sign in logic
+			signInWithEmailAndPassword(
+				auth,
+				email.current.value,
+				password.current.value
+			)
+				.then((userCredential) => {
+					// Signed in
+					const user = userCredential.user;
+					// console.log(user);
+					// ...
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					setErrorMsg(errorCode + " - " + errorMessage);
+				});
+		}
 	};
 	const toggleloginform = () => {
 		setisloginfrom(!isloginform);
+		setErrorMsg();
 	};
 
 	return (
@@ -15,25 +105,32 @@ const LoginForm = () => {
 			<h1 className="text-white font-semibold text-3xl py-5">
 				{isloginform ? "Sign in" : "Sign up"}
 			</h1>
-			<form action="" className="mt-3" onSubmit={handleForm}>
+			<form className="mt-3" onSubmit={(e)=>e.preventDefault()}>
 				{!isloginform && (
 					<input
 						type="text"
 						placeholder="Name"
+						ref={fname}
 						className="w-full my-2 px-6 py-3 rounded-md bg-[#333333] text-[#8c8c8c]"
 					></input>
 				)}
 				<input
-					type="email"
+					type="text"
 					placeholder="Email Address"
+					ref={email}
 					className="w-full my-2 px-6 py-3 rounded-md bg-[#333333] text-[#8c8c8c]"
 				/>
 				<input
 					type="password"
 					placeholder="Password"
+					ref={password}
 					className="w-full my-2 px-6 py-3 rounded-md bg-[#333333] text-[#8c8c8c]"
 				/>
-				<button className="bg-[#e50914] w-full text-bold text-white  mt-8 p-3 rounded-md">
+				<p className="text-red-600 text-xs">{errormsg}</p>
+				<button
+					onClick={handleButtonclick}
+					className="bg-[#e50914] w-full text-bold text-white  mt-8 p-3 rounded-md"
+				>
 					{isloginform ? "Sign in" : "Sign up"}
 				</button>
 
@@ -63,8 +160,8 @@ const LoginForm = () => {
 				</h3>
 
 				<p className="text-[#8c8c8c] text-[0.8rem] pt-5">
-					This page is protected by Google reCAPTCHA to ensure you{"'"}re not a bot.{" "}
-					<button className="text-[#0a61eb]">Learn more.</button>
+					This page is protected by Google reCAPTCHA to ensure you{"'"}re not a
+					bot. <button className="text-[#0a61eb]">Learn more.</button>
 				</p>
 
 				{/* <p className="text-[0.8rem] text-[#8c8c8c] pt-[2px]">
