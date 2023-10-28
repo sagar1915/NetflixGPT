@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { updateProfile } from "firebase/auth";
+import { user_img } from "../utils/constants";
 
 import checkValidData from "../utils/validate";
 import {
@@ -44,7 +45,7 @@ const LoginForm = () => {
 
 					updateProfile(user, {
 						displayName: fname.current.value,
-						photoURL: "https://example.com/jane-q-user/profile.jpg",
+						photoURL: user_img,
 					})
 						.then(() => {
 							// Profile updated!
@@ -79,7 +80,7 @@ const LoginForm = () => {
 				.then((userCredential) => {
 					// Signed in
 					const user = userCredential.user;
-					// console.log(user);
+					
 					// ...
 				})
 				.catch((error) => {

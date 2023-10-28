@@ -1,3 +1,4 @@
+import { netflix_logo } from "../utils/constants";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +12,6 @@ const Header = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const user = useSelector((store) => store.user);
-	console.log(user);
 
 	const handleSignout = () => {
 		signOut(auth)
@@ -24,7 +24,7 @@ const Header = () => {
 	};
 
 	useEffect(() => {
-		onAuthStateChanged(auth, (user) => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
 				const { uid, email, displayName, photoURL } = user;
 				dispatch(
@@ -41,13 +41,15 @@ const Header = () => {
 				navigate("/");
 			}
 		});
+		//unsubscribe when component unmounts.
+		return () => unsubscribe();
 	}, []);
 
 	return (
-		<div className="absolute flex justify-between z-30 w-[100%] px-[3rem] py-[1.5rem] m-auto bg-gradient-to-b from-black">
+		<div className="h-[90px] absolute flex justify-between z-30 w-[100%] px-[3rem] py-[1.5rem] m-auto bg-gradient-to-b from-black">
 			<img
 				className="w-[9.25rem] h-[2.5rem]"
-				src="https://assets.nflxext.com/en_us/layout/ecweb/common/logo-shadow2x.png"
+				src={netflix_logo}
 				alt="netflix-logo-image"
 			/>
 			{user && (
@@ -55,7 +57,7 @@ const Header = () => {
 					<div className="flex items-center px-1">
 						<img
 							className="h-8 rounded-md"
-							src="https://occ-0-2086-2186.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABY5cwIbM7shRfcXmfQg98cqMqiZZ8sReZnj4y_keCAHeXmG_SoqLD8SXYistPtesdqIjcsGE-tHO8RR92n7NyxZpqcFS80YfbRFz.png?r=229"
+							src={user.photoURL}
 							alt="usericon"
 						/>
 					</div>
@@ -64,7 +66,7 @@ const Header = () => {
 					)}
 					<button
 						onClick={handleSignout}
-						className="py-2 px-3 mx-3 bg-red-600 rounded-md text-white text-sm font-semibold"
+						className="py-1.5 px-3 mx-3 bg-red-600 rounded-md text-white text-sm font-semibold"
 					>
 						Sign out
 					</button>
