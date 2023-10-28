@@ -9,18 +9,15 @@ import {
 import { auth } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
-import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
 	const dispatch = useDispatch();
-	const navigate = useNavigate();
 	const [isloginform, setisloginfrom] = useState(true);
 	const [errormsg, setErrorMsg] = useState(null);
 
 	const fname = useRef(null);
 	const email = useRef(null);
 	const password = useRef(null);
-
 
 	const handleButtonclick = () => {
 		//validate the form data
@@ -44,7 +41,6 @@ const LoginForm = () => {
 				.then((userCredential) => {
 					// Signed up
 					const user = userCredential.user;
-					// console.log(user);
 
 					updateProfile(user, {
 						displayName: fname.current.value,
@@ -54,7 +50,6 @@ const LoginForm = () => {
 							// Profile updated!
 							// ...
 							const { uid, email, displayName, photoURL } = auth.currentUser;
-							// console.log(user);
 							dispatch(
 								addUser({
 									uid: uid,
@@ -63,7 +58,6 @@ const LoginForm = () => {
 									photoURL: photoURL,
 								})
 							);
-							navigate("/Browse")
 						})
 						.catch((error) => {
 							// An error occurred
@@ -105,7 +99,7 @@ const LoginForm = () => {
 			<h1 className="text-white font-semibold text-3xl py-5">
 				{isloginform ? "Sign in" : "Sign up"}
 			</h1>
-			<form className="mt-3" onSubmit={(e)=>e.preventDefault()}>
+			<form className="mt-3" onSubmit={(e) => e.preventDefault()}>
 				{!isloginform && (
 					<input
 						type="text"
