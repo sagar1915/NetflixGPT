@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 
 const SecondaryContainer = () => {
 	const movieList = useSelector((store) => store.movies);
-	console.log(movieList);
+	
 	return (
 		<div className="bg-[#141414]">
 			<div className="-mt-60 relative z-50">

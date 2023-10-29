@@ -25,7 +25,17 @@
 - fetch data for trailer video
 - update store with trailer video data
 - embed youtube videos and autoplay 
+- secondary container
+- build movie List
+- movie categories hooks
+- GPT search feature
+- Multi language feature
 - 
+
+
+
+
+
 # Features
 
 - login page

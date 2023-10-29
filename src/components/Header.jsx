@@ -1,4 +1,4 @@
-import { netflix_logo } from "../utils/constants";
+import { SUPPORTED_LANGUAGES, netflix_logo } from "../utils/constants";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
@@ -7,11 +7,25 @@ import { onAuthStateChanged } from "firebase/auth";
 import { addUser, removeUser } from "../utils/userSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { BiSearchAlt } from "react-icons/bi";
+import { IoHome } from "react-icons/io5";
+import { toogleGPTsearchView } from "../utils/gptSlice";
+import { setLang } from "../utils/configSlice";
 
 const Header = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const user = useSelector((store) => store.user);
+	const showGptSearch = useSelector((store) => store.gpt.gptActive);
+
+	const handleLangChange = (e) => {
+		dispatch(setLang(e.target.value));
+		// console.log(e.target.value);
+	};
+
+	const handleGPTsearchClick = () => {
+		dispatch(toogleGPTsearchView());
+	};
 
 	const handleSignout = () => {
 		signOut(auth)
@@ -54,6 +68,42 @@ const Header = () => {
 			/>
 			{user && (
 				<div className="flex items-center">
+					{showGptSearch && (
+						<div>
+							<select
+								onChange={handleLangChange}
+								name=""
+								id=""
+								className="px-2 py-1.5 mx-2 bg-gray-600 text-white rounded-md"
+							>
+								{SUPPORTED_LANGUAGES.map((l) => (
+									<option key={l.identifier} value={l.identifier}>
+										{l.name}
+									</option>
+								))}
+							</select>
+						</div>
+					)}
+					<div className="text-white flex border rounded-md border-green-500 bg-green-600 mx-2">
+						{showGptSearch ? (
+							<button
+								onClick={handleGPTsearchClick}
+								className="flex items-center px-2 py-1.5"
+							>
+								<IoHome className="text-xl" />
+								<span className="px-1 text-sm font-semibold">Home</span>
+							</button>
+						) : (
+							<button
+								onClick={handleGPTsearchClick}
+								className="flex items-center px-2 py-1.5"
+							>
+								<BiSearchAlt className="text-xl" />
+
+								<span className="px-1 text-sm font-semibold">GPT Search</span>
+							</button>
+						)}
+					</div>
 					<div className="flex items-center px-1">
 						<img
 							className="h-8 rounded-md"
@@ -61,12 +111,13 @@ const Header = () => {
 							alt="usericon"
 						/>
 					</div>
+
 					{user && (
 						<p className="text-white font-semibold">{user.displayName}</p>
 					)}
 					<button
 						onClick={handleSignout}
-						className="py-1.5 px-3 mx-3 bg-red-600 rounded-md text-white text-sm font-semibold"
+						className="py-1.5 px-3 pb-2 mx-3 bg-red-600 rounded-md text-white text-sm font-semibold"
 					>
 						Sign out
 					</button>

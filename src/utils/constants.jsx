@@ -15,3 +15,18 @@ export const options = {
 };
 
 export const IMGCDN = "https://image.tmdb.org/t/p/w780/";
+
+export const SUPPORTED_LANGUAGES = [
+	{
+		identifier: "en",
+		name: "English",
+	},
+	{
+		identifier: "hindi",
+		name: "Hindi",
+	},
+	{
+		identifier: "german",
+		name: "German",
+	},
+];
